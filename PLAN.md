@@ -258,6 +258,18 @@ Chrome check (not installed here); stretch morph FPS test.
 - Every filter: `color-interpolation-filters="sRGB"`, expanded region,
   documented parameter ranges.
 
+**DONE 2026-07-12.** `src/filters/` now holds `primitives.ts` (edgeWobble,
+pigmentRim, granulation, paperGrain, paperSpecks, misregister, alphaScale —
+each a chainable in/result fragment with parameter ranges in JSDoc) and
+`recipes.ts` (washFilter / inkFilter / paperFilter assembled from
+primitives + vignetteGradient). Every recipe declares a **cheap mode**
+(wash: displacement-only; ink: offset-only; paper: none/flat) per the
+performance playbook. Verified pixel-identical to the pre-refactor demos
+(magick compare, only timing-caption text differs). Gotcha for dev: after
+deleting/moving a module, restart `vite` — the dev server's module graph
+kept resolving the old `filters.ts` and served a blank page while the
+production build was fine.
+
 ### Phase 3 — Build-time pipeline
 *(The normalization + hit-target/paint-structure part is a firm requirement
 — adapting existing SVGs is in scope per Decision 2. The Hobbs-deformation

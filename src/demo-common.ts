@@ -1,3 +1,4 @@
+import { vignetteGradient } from "./filters";
 import leafRaw from "../samples/leaf.svg?raw";
 import heartRaw from "../samples/heart.svg?raw";
 import dinosaurRaw from "../samples/dinosaur.svg?raw";
@@ -50,17 +51,12 @@ export function addPaper(svg: SVGSVGElement, paperFilterId: string): void {
   svg.insertBefore(paper, defs ? defs.nextSibling : svg.firstChild);
 
   const gradId = `vignette-${Math.random().toString(36).slice(2, 8)}`;
-  const grad = document.createElementNS(ns, "radialGradient");
-  grad.setAttribute("id", gradId);
-  grad.innerHTML = `
-    <stop offset="78%" stop-color="#3c2f1a" stop-opacity="0"/>
-    <stop offset="100%" stop-color="#3c2f1a" stop-opacity="0.09"/>`;
   let defsEl = svg.querySelector("defs");
   if (!defsEl) {
     defsEl = document.createElementNS(ns, "defs");
     svg.insertBefore(defsEl, svg.firstChild);
   }
-  defsEl.appendChild(grad);
+  defsEl.insertAdjacentHTML("beforeend", vignetteGradient(gradId));
 
   const vignette = document.createElementNS(ns, "rect");
   vignette.setAttribute("x", String(x));

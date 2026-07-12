@@ -1,0 +1,60 @@
+:root {
+  color-scheme: light;
+  font-family: Georgia, "Times New Roman", serif;
+  background: #efe9db;
+  color: #35302a;
+}
+body {
+  margin: 0 auto;
+  max-width: 1100px;
+  padding: 1.5rem;
+}
+.home ul {
+  line-height: 2;
+}
+header.demo {
+  display: flex;
+  align-items: baseline;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+header.demo h1 {
+  font-size: 1.3rem;
+  margin: 0;
+}
+header.demo nav a {
+  margin-right: 0.8rem;
+}
+section.sample {
+  margin-bottom: 2.5rem;
+}
+section.sample h2 {
+  font-size: 1.05rem;
+  font-variant: small-caps;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #c9bfa8;
+  padding-bottom: 0.2rem;
+}
+.pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+}
+.pane {
+  background: #fff;
+  border: 1px solid #d8cfba;
+  padding: 0.5rem;
+}
+.pane svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.pane .caption {
+  font-size: 0.78rem;
+  color: #6d6455;
+  margin-top: 0.4rem;
+  display: flex;
+  justify-content: space-between;
+}

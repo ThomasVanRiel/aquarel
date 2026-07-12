@@ -215,6 +215,8 @@ qualities. Conventions the pipeline must be built against:
   filtered dinosaur sample with a quick rAF `d` interpolation and note the
   frame rate, to size up the degraded-filter-mode need early.
 - **Exit criterion**: pick the approach (expected: C) with the user.
+  → **DECIDED 2026-07-12: Thomas picked C (hybrid).** Phase 1 complete;
+  A's filter recipes live on inside C. Demo B stays as reference only.
 
 **Phase 1 results (2026-07-12).** Harness built (`npm run dev`, pages
 `/a.html` `/b.html` `/c.html`), all three approaches implemented and tuned

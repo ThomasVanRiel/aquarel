@@ -51,6 +51,24 @@ section.sample h2 {
   width: 100%;
   height: auto;
 }
+body.solo {
+  padding: 0;
+  max-width: none;
+}
+body.solo section.sample {
+  margin: 0;
+}
+body.solo .pair {
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+body.solo .pane {
+  border: none;
+  padding: 0;
+}
+body.solo .caption {
+  display: none;
+}
 .pane .caption {
   font-size: 0.78rem;
   color: #6d6455;

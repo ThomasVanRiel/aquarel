@@ -93,17 +93,26 @@ export function renderPage(
   transform: (svg: SVGSVGElement, sample: Sample) => void,
 ): void {
   const app = document.getElementById("app")!;
-  const header = document.createElement("header");
-  header.className = "demo";
-  header.innerHTML = `<h1>${title}</h1>
-    <nav><a href="/">index</a><a href="/a.html">A filters</a><a href="/b.html">B geometry</a><a href="/c.html">C hybrid</a></nav>
-    <p>${description}</p>`;
-  app.appendChild(header);
+  // ?only=<name>&pane=treated renders a single sample's treated SVG
+  // full-width — used for capturing README/docs images
+  const params = new URLSearchParams(location.search);
+  const only = params.get("only");
+  const soloTreated = params.get("pane") === "treated";
+  if (soloTreated) document.body.classList.add("solo");
 
-  for (const sample of samples) {
+  if (!soloTreated) {
+    const header = document.createElement("header");
+    header.className = "demo";
+    header.innerHTML = `<h1>${title}</h1>
+      <nav><a href="/">index</a><a href="/a.html">A filters</a><a href="/b.html">B geometry</a><a href="/c.html">C hybrid</a></nav>
+      <p>${description}</p>`;
+    app.appendChild(header);
+  }
+
+  for (const sample of samples.filter((s) => !only || s.name === only)) {
     const section = document.createElement("section");
     section.className = "sample";
-    section.innerHTML = `<h2>${sample.name}</h2>`;
+    if (!soloTreated) section.innerHTML = `<h2>${sample.name}</h2>`;
     const pair = document.createElement("div");
     pair.className = "pair";
 
@@ -113,10 +122,13 @@ export function renderPage(
     transform(treated, sample);
     const buildMs = performance.now() - t0;
 
-    for (const [label, svg, extra] of [
-      ["source", original, ""],
-      ["treated", treated, ` · built in ${buildMs.toFixed(1)} ms`],
-    ] as const) {
+    const panes = soloTreated
+      ? ([["treated", treated, ""]] as const)
+      : ([
+          ["source", original, ""],
+          ["treated", treated, ` · built in ${buildMs.toFixed(1)} ms`],
+        ] as const);
+    for (const [label, svg, extra] of panes) {
       const pane = document.createElement("div");
       pane.className = "pane";
       pane.appendChild(svg);

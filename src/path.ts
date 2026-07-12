@@ -9,11 +9,12 @@ export interface Subpath {
 }
 
 /**
- * Parses an SVG path `d` string (M/L/H/V/C and relatives, Z) and flattens
- * curves to polylines. `curveSegments` controls cubic sampling density.
+ * Parses an SVG path `d` string (M/L/H/V/C/S/Q and relatives, Z) and
+ * flattens curves to polylines. `curveSegments` controls sampling density.
+ * Arcs (A) are unsupported — convert them upstream.
  */
 export function flattenPath(d: string, curveSegments = 16): Subpath[] {
-  const tokens = d.match(/[MmLlHhVvCcZz]|-?\d*\.?\d+(?:e-?\d+)?/g);
+  const tokens = d.match(/[MmLlHhVvCcSsQqZz]|-?\d*\.?\d+(?:e-?\d+)?/g);
   if (!tokens) return [];
   const subpaths: Subpath[] = [];
   let current: Pt[] = [];
@@ -21,6 +22,9 @@ export function flattenPath(d: string, curveSegments = 16): Subpath[] {
   let cy = 0;
   let startX = 0;
   let startY = 0;
+  // reflection point for S (previous cubic's second control point)
+  let prevCx: number | null = null;
+  let prevCy: number | null = null;
   let i = 0;
   let cmd = "";
 
@@ -28,6 +32,21 @@ export function flattenPath(d: string, curveSegments = 16): Subpath[] {
   const finish = (closed: boolean) => {
     if (current.length > 1) subpaths.push({ points: current, closed });
     current = [];
+  };
+
+  const sampleCubic = (x1: number, y1: number, x2: number, y2: number, x3: number, y3: number) => {
+    for (let s = 1; s <= curveSegments; s++) {
+      const u = s / curveSegments;
+      const w = 1 - u;
+      current.push({
+        x: w * w * w * cx + 3 * w * w * u * x1 + 3 * w * u * u * x2 + u * u * u * x3,
+        y: w * w * w * cy + 3 * w * w * u * y1 + 3 * w * u * u * y2 + u * u * u * y3,
+      });
+    }
+    prevCx = x2;
+    prevCy = y2;
+    cx = x3;
+    cy = y3;
   };
 
   while (i < tokens.length) {
@@ -39,6 +58,7 @@ export function flattenPath(d: string, curveSegments = 16): Subpath[] {
         finish(true);
         cx = startX;
         cy = startY;
+        prevCx = prevCy = null;
         continue;
       }
     }
@@ -53,6 +73,7 @@ export function flattenPath(d: string, curveSegments = 16): Subpath[] {
       startY = cy;
       current = [{ x: cx, y: cy }];
       cmd = rel ? "l" : "L";
+      prevCx = prevCy = null;
       continue;
     }
     if (cmd === "L" || cmd === "l") {
@@ -60,16 +81,19 @@ export function flattenPath(d: string, curveSegments = 16): Subpath[] {
       cx = rel ? cx + num() : num();
       cy = rel ? cy + num() : num();
       current.push({ x: cx, y: cy });
+      prevCx = prevCy = null;
       continue;
     }
     if (cmd === "H" || cmd === "h") {
       cx = cmd === "h" ? cx + num() : num();
       current.push({ x: cx, y: cy });
+      prevCx = prevCy = null;
       continue;
     }
     if (cmd === "V" || cmd === "v") {
       cy = cmd === "v" ? cy + num() : num();
       current.push({ x: cx, y: cy });
+      prevCx = prevCy = null;
       continue;
     }
     if (cmd === "C" || cmd === "c") {
@@ -80,16 +104,38 @@ export function flattenPath(d: string, curveSegments = 16): Subpath[] {
       const y2 = rel ? cy + num() : num();
       const x3 = rel ? cx + num() : num();
       const y3 = rel ? cy + num() : num();
-      for (let s = 1; s <= curveSegments; s++) {
-        const u = s / curveSegments;
-        const w = 1 - u;
-        current.push({
-          x: w * w * w * cx + 3 * w * w * u * x1 + 3 * w * u * u * x2 + u * u * u * x3,
-          y: w * w * w * cy + 3 * w * w * u * y1 + 3 * w * u * u * y2 + u * u * u * y3,
-        });
-      }
-      cx = x3;
-      cy = y3;
+      sampleCubic(x1, y1, x2, y2, x3, y3);
+      continue;
+    }
+    if (cmd === "S" || cmd === "s") {
+      const rel = cmd === "s";
+      // first control point reflects the previous cubic's second one
+      const x1 = prevCx === null ? cx : 2 * cx - prevCx;
+      const y1 = prevCy === null ? cy : 2 * cy - prevCy;
+      const x2 = rel ? cx + num() : num();
+      const y2 = rel ? cy + num() : num();
+      const x3 = rel ? cx + num() : num();
+      const y3 = rel ? cy + num() : num();
+      sampleCubic(x1, y1, x2, y2, x3, y3);
+      continue;
+    }
+    if (cmd === "Q" || cmd === "q") {
+      const rel = cmd === "q";
+      const qx = rel ? cx + num() : num();
+      const qy = rel ? cy + num() : num();
+      const x3 = rel ? cx + num() : num();
+      const y3 = rel ? cy + num() : num();
+      // quadratic → cubic control points
+      sampleCubic(
+        cx + (2 / 3) * (qx - cx),
+        cy + (2 / 3) * (qy - cy),
+        x3 + (2 / 3) * (qx - x3),
+        y3 + (2 / 3) * (qy - y3),
+        x3,
+        y3,
+      );
+      // Q has no cubic control point to reflect for a following S
+      prevCx = prevCy = null;
       continue;
     }
     throw new Error(`Unsupported path command "${cmd}" in: ${d.slice(0, 40)}…`);

@@ -284,6 +284,21 @@ part depends on the Phase 1 decision and is dropped if pure filters win.)*
 - Deterministic via seeded PRNG so builds are reproducible.
 - Config per-shape: layer count, opacity, deform intensity, palette mapping.
 
+**DONE 2026-07-12.** `npm run pipeline -- <input.svg> [-o out] [-c
+config.json] [--cheap] [--no-paper]` (tsx + svgson devDeps; core modules
+were already DOM-free). `src/pipeline/`: `config.ts` (defaults = Phase 1
+baselines; per-figure + per-part overrides; djb2 name-derived seed),
+`normalize.ts` (conventions fast path via `.washes`/`.ink`/`.labels`
+classes, heuristic path for arbitrary SVGs: fill/stroke split, part ids
+from ancestor `g[id]`, text → labels, bbox-based adjacent-without-overlap
+warning), `paint.ts` (emits defs/paper/g.paint/g.ink/labels/vignette/g.hit).
+Path parser extended with S/Q commands (arcs still unsupported — error).
+Verified: conventions samples byte-size-match demo C and render identically
+in character (seeds differ by design); heuristic path tested on a
+fill+stroke+text SVG; cheap mode drops turbulence count 7 → 2 on the leaf.
+v1 limits documented in normalize.ts: `style` attrs ignored, leader lines
+stay in ink, occluded-ink trimming remains an authoring task.
+
 ### Phase 4 — Interactivity & a11y
 All four interaction patterns confirmed in scope (Decision 6):
 - Hover/focus highlight of a part via the hit-target layer.

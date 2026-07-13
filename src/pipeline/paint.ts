@@ -79,7 +79,7 @@ export function paint(figure: Figure, figureName: string, cfg: FigureConfig): st
           return out;
         })
         .join("");
-      return `\n    <g id="${esc(part.id)}" filter="url(#${figureName}-wash-${i})">${layerPaths}\n    </g>`;
+      return `\n    <g id="${esc(part.id)}"${attrs(part.attributes)} filter="url(#${figureName}-wash-${i})">${layerPaths}\n    </g>`;
     })
     .join("");
 
@@ -114,9 +114,17 @@ export function paint(figure: Figure, figureName: string, cfg: FigureConfig): st
       ? `\n  <rect x="${vx}" y="${vy}" width="${vw}" height="${vh}" fill="url(#${vignetteId})" pointer-events="none"/>`
       : "";
 
-  const rootAttrs = { xmlns: "http://www.w3.org/2000/svg", ...figure.rootAttributes };
+  // static accessibility baseline: role="img" + name; the runtime helper
+  // upgrades the role to "group" when it wires interactivity
+  const rootAttrs = {
+    xmlns: "http://www.w3.org/2000/svg",
+    role: "img",
+    "aria-label": figureName,
+    ...figure.rootAttributes,
+  };
 
   return `<svg${attrs(rootAttrs)}>
+  <title>${esc(figureName)}</title>
   <defs>${defs}</defs>${paperRect}
   <g class="paint" pointer-events="none">${paintGroups}
   </g>${inkGroup}

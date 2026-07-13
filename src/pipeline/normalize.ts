@@ -26,7 +26,14 @@ export interface Wash {
 
 export interface Part {
   id: string;
+  /** data-* attributes carried from the source part group
+   *  (e.g. data-label, data-info — consumed by the runtime helper) */
+  attributes: Record<string, string>;
   washes: Wash[];
+}
+
+function dataAttributes(attrs: Record<string, string>): Record<string, string> {
+  return Object.fromEntries(Object.entries(attrs).filter(([k]) => k.startsWith("data-")));
 }
 
 export interface InkPath {
@@ -108,7 +115,11 @@ function normalizeConventions(root: INode, washesGroup: INode, figure: Figure): 
       figure.warnings.push(`.washes contains a non-part child <${partNode.name}> — skipped`);
       continue;
     }
-    const part: Part = { id: partNode.attributes.id, washes: [] };
+    const part: Part = {
+      id: partNode.attributes.id,
+      attributes: dataAttributes(partNode.attributes),
+      washes: [],
+    };
     for (const shape of partNode.children ?? []) {
       const d = SHAPE_TO_PATH[shape.name]?.(shape.attributes) ?? null;
       if (!d) {
@@ -144,11 +155,15 @@ function normalizeHeuristic(root: INode, figure: Figure): void {
   let partCounter = 0;
   const labelNodes: INode[] = [];
 
-  const walk = (node: INode, groupId: string | null) => {
+  const walk = (node: INode, groupId: string | null, groupData: Record<string, string>) => {
     for (const child of node.children ?? []) {
       if (child.type !== "element") continue;
       if (child.name === "g") {
-        walk(child, child.attributes.id ?? groupId);
+        walk(
+          child,
+          child.attributes.id ?? groupId,
+          child.attributes.id ? dataAttributes(child.attributes) : groupData,
+        );
         continue;
       }
       if (child.name === "text") {
@@ -177,7 +192,7 @@ function normalizeHeuristic(root: INode, figure: Figure): void {
         const id = groupId ?? child.attributes.id ?? `part-${++partCounter}`;
         let part = figure.parts.find((p) => p.id === id);
         if (!part) {
-          part = { id, washes: [] };
+          part = { id, attributes: groupId ? groupData : dataAttributes(child.attributes), washes: [] };
           figure.parts.push(part);
         }
         part.washes.push({ d, fill, isShade: hasClass(child, "shade") });
@@ -190,7 +205,7 @@ function normalizeHeuristic(root: INode, figure: Figure): void {
       }
     }
   };
-  walk(root, null);
+  walk(root, null, {});
 
   if (labelNodes.length > 0) {
     figure.labelsMarkup = `<g class="labels">${labelNodes.map((n) => stringify(n)).join("")}</g>`;

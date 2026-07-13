@@ -1,15 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 110" font-size="4.5">
   <g class="washes">
-    <g id="aorta">
+    <g id="aorta" data-label="aorta">
       <path fill="#a65a48" d="M56 44 C54 28 58 17 70 13 C79 10 85 15 82 21 C75 19 69 21 66 27 C62 33 64 39 66 46 Z"/>
     </g>
-    <g id="pulmonalis">
+    <g id="pulmonalis" data-label="truncus pulmonalis">
       <path fill="#bf7f63" d="M46 42 C43 31 45 24 52 19 C57 16 61 19 59 24 C54 24 51 28 51 34 C51 37 51 40 52 44 Z"/>
     </g>
-    <g id="atrium">
+    <g id="atrium" data-label="atrium dextrum">
       <path fill="#c08a6f" d="M30 32 C19 34 16 49 31 52 C43 55 49 43 43 34 C39 29 34 31 30 32 Z"/>
     </g>
-    <g id="ventriculus">
+    <g id="ventriculus" data-label="ventriculus" data-info="chief pumping chamber">
       <path fill="#b06a5e" d="M35 44 C19 50 17 71 33 87 C50 104 78 100 88 82 C96 68 91 52 78 46 C62 39 47 40 35 44 Z"/>
       <path class="shade" fill="#8e5044" d="M34 58 C30 72 39 87 54 94 C44 96 33 91 28 81 C24 72 28 63 34 58 Z"/>
       <path class="shade" fill="#96574a" d="M78 48 C88 54 92 66 87 78 C92 64 88 54 76 49 Z"/>
@@ -23,11 +23,11 @@
     <path d="M52 46 C58 58 56 74 48 88 M60 48 C64 58 64 70 60 82" stroke-width="0.4"/>
   </g>
   <g class="labels" fill="#41392c" font-family="Georgia, 'Times New Roman', serif" font-style="italic">
-    <text x="88" y="14">aorta</text>
-    <path class="leader" d="M87 13 L79 15" stroke="#41392c" stroke-width="0.32" fill="none"/>
-    <text x="4" y="24">atrium dextrum</text>
-    <path class="leader" d="M18 26 L28 34" stroke="#41392c" stroke-width="0.32" fill="none"/>
-    <text x="88" y="98">ventriculus</text>
-    <path class="leader" d="M88 96 L74 92" stroke="#41392c" stroke-width="0.32" fill="none"/>
+    <text x="88" y="14" data-part="aorta">aorta</text>
+    <path class="leader" data-part="aorta" d="M87 13 L79 15" stroke="#41392c" stroke-width="0.32" fill="none"/>
+    <text x="4" y="24" data-part="atrium">atrium dextrum</text>
+    <path class="leader" data-part="atrium" d="M18 26 L28 34" stroke="#41392c" stroke-width="0.32" fill="none"/>
+    <text x="88" y="98" data-part="ventriculus">ventriculus</text>
+    <path class="leader" data-part="ventriculus" d="M88 96 L74 92" stroke="#41392c" stroke-width="0.32" fill="none"/>
   </g>
 </svg>

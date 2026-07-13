@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" font-size="4">
   <g class="washes">
-    <g id="blade">
+    <g id="blade" data-label="lamina">
       <path fill="#7d8f5b" d="M50 12 C72 25 79 55 50 90 C21 55 28 25 50 12 Z"/>
       <path class="shade" fill="#5e7145" d="M50 12 C28 25 21 55 50 90 C42 62 42 34 50 12 Z"/>
     </g>
-    <g id="petiole">
+    <g id="petiole" data-label="petiolus">
       <path fill="#8a7a4a" d="M48.5 86 C48 92 48 96 47 99 L50.5 99 C50 95 50.5 91 51.5 86 Z"/>
     </g>
   </g>
@@ -14,9 +14,9 @@
     <path d="M50 30 C58 33 63 38 66 44 M50 45 C58 49 62 54 64 60 M50 60 C56 63 59 67 60 72 M50 30 C42 33 37 38 34 44 M50 45 C42 49 38 54 36 60 M50 60 C44 63 41 67 40 72" stroke-width="0.35"/>
   </g>
   <g class="labels" fill="#41392c" font-family="Georgia, 'Times New Roman', serif" font-style="italic">
-    <text x="76" y="30">lamina</text>
-    <path class="leader" d="M75 29 L64 34" stroke="#41392c" stroke-width="0.3" fill="none"/>
-    <text x="60" y="97">petiolus</text>
-    <path class="leader" d="M59 95.5 L52 94" stroke="#41392c" stroke-width="0.3" fill="none"/>
+    <text x="76" y="30" data-part="blade">lamina</text>
+    <path class="leader" data-part="blade" d="M75 29 L64 34" stroke="#41392c" stroke-width="0.3" fill="none"/>
+    <text x="60" y="97" data-part="petiole">petiolus</text>
+    <path class="leader" data-part="petiole" d="M59 95.5 L52 94" stroke="#41392c" stroke-width="0.3" fill="none"/>
   </g>
 </svg>

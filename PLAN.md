@@ -310,6 +310,26 @@ All four interaction patterns confirmed in scope (Decision 6):
 - Keyboard navigation across parts; `role="img"`/`aria-label` structure.
 - Small runtime helper (dependency-free ES module) the website imports.
 
+**DONE 2026-07-12.** `src/runtime/index.ts` — dependency-free `Aquarel`
+class (an EventTarget; factory `aquarel(svg, options)`). Covers all four
+patterns: hover/focus boosts each layer path's fill-opacity ×1.35 (JS
+inline style, NOT css `filter` — that would override the SVG filter
+attribute); labels tagged `data-part` link both ways with leader-line
+emphasis; opt-in pointer tooltip fed by `data-label`/`data-info`;
+external controls via `ctrl.set(id, on)`/`ctrl.parts`/`ctrl.focus(id)`
+plus `partenter`/`partleave`/`partclick` CustomEvents. Keyboard: hit
+paths get tabindex+role=button+aria-label, arrows/Home/End walk parts,
+Enter/Space clicks. Pipeline now carries part `data-*` through to paint
+groups and emits `role="img"` + `aria-label` + `<title>` statically
+(runtime upgrades role to `group`). Metadata conventions: `data-label`
+(display name), `data-info` (tooltip detail) on part groups; `data-part`
+on label text + leaders. Demo: `/p.html` runs normalize→paint in-browser
+on the raw samples + wires the runtime (event log, per-part toggle
+buttons, `?activate=<figure>:<part>` for headless highlight testing —
+verified via pixel diff). Multi-path parts: pointerover/out filtered by
+`relatedTarget.dataset.part` to avoid flicker between washes of the
+same part.
+
 ### Phase 5 — Website integration & performance validation
 - Deliverable stays framework-agnostic (plain SVG + optional vanilla ES
   module); write a thin example integration for the Astro site as the first

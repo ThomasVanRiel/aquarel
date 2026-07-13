@@ -19,8 +19,8 @@ import { normalize, paint, resolveConfig } from "./pipeline";
 
 const NS = "http://www.w3.org/2000/svg";
 const VIEWBOX = "-10 -10 120 80";
-const MORPH_MS = 800;
-const FADE_MS = 200;
+const MORPH_MS = 2000;
+const FADE_MS = 600;
 const POINTS = 72;
 
 // ---- page scaffold ----
@@ -55,7 +55,7 @@ function poseSampleSvg(pose: Pose): string {
   </svg>`;
 }
 
-const STACK_STYLE = "position:absolute;inset:0;width:100%;height:100%;transition:opacity 0.2s";
+const STACK_STYLE = `position:absolute;inset:0;width:100%;height:100%;transition:opacity ${FADE_MS}ms`;
 const fullRenders = new Map<PoseName, SVGSVGElement>();
 for (const name of Object.keys(dinoPoses) as PoseName[]) {
   const figure = await normalize(poseSampleSvg(dinoPoses[name]), `dino-${name}`);

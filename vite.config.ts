@@ -9,6 +9,8 @@ export default defineConfig({
         a: resolve(import.meta.dirname, "a.html"),
         b: resolve(import.meta.dirname, "b.html"),
         c: resolve(import.meta.dirname, "c.html"),
+        p: resolve(import.meta.dirname, "p.html"),
+        m: resolve(import.meta.dirname, "m.html"),
       },
     },
   },

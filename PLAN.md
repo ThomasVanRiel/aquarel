@@ -135,6 +135,22 @@ requirement, but keep the architecture from precluding it:
   generation with same seed and matching vertex counts is the (complex)
   fallback.
 
+**Prototype built 2026-07-12 — `/m.html` (`src/demo-m.ts`,
+`src/dino-poses.ts`).** Demonstrates the full strategy with the three
+Dinosaur.astro poses: full pipeline render per pose pre-generated
+in-browser; on morph, a cheap layer (crisp fill+stroke paths, cheap-mode
+wash filter, flat paper) takes over and morphs via dependency-free point
+interpolation — both poses resampled to 72 arc-length-uniform points,
+lerped, serialized with `toSmoothClosedPathD` (robust to incompatible
+path command structures, unlike raw `d` lerping) — with an
+easeOutElastic ease; on settle, the target's full render crossfades in
+(200 ms) hiding its one-time raster cost. Sail ink per pose derives from
+the trim rule (drop the closed outline's bottom-return segments). FPS
+counter included; measure in a real browser — headless Firefox stalls
+timers/rAF while a screenshot waits on the load event, so the morph loop
+can't be exercised headlessly (synchronous `?test=<from>:<to>:<t>` hook
+verifies the interpolation + cheap/settled states instead).
+
 ## Performance playbook (when a figure costs too much)
 
 Ordered by what to try first; "leave the look as is" is the default and
